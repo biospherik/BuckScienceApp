@@ -1,4 +1,4 @@
-@model BuckScience.Web.ViewModels.Cameras.CameraDetailsVm
+﻿@model BuckScience.Web.ViewModels.Cameras.CameraDetailsVm
 @{
     ViewData["Title"] = $"{Model.LocationName} - Camera Details";
     
@@ -271,7 +271,8 @@
             directionDegrees = p.DirectionDegrees,
             startDateTime = p.StartDateTime,
             endDateTime = p.EndDateTime,
-            isCurrentPlacement = p.IsCurrentPlacement
+            isCurrentPlacement = p.IsCurrentPlacement,
+            isAtCurrentLocation = p.IsAtCurrentLocation
         })));
 
         // Current camera data

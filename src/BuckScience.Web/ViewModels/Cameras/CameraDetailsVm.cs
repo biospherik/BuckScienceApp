@@ -1,4 +1,4 @@
-using BuckScience.Web.ViewModels.Photos;
+﻿using BuckScience.Web.ViewModels.Photos;
 
 namespace BuckScience.Web.ViewModels.Cameras;
 
@@ -32,6 +32,7 @@ public class CameraDetailsVm
         public DateTime StartDateTime { get; set; }
         public DateTime? EndDateTime { get; set; }
         public bool IsCurrentPlacement { get; set; }
+        public bool IsAtCurrentLocation { get; set; }
         public TimeSpan? Duration { get; set; }
     }
 }

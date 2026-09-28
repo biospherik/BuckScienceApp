@@ -1,4 +1,5 @@
 ﻿using BuckScience.Application.Abstractions;
+using BuckScience.Domain.Helpers;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
@@ -44,10 +45,10 @@ public static class UpdateCamera
 
         // Check if location, direction, or location name changed
         var currentPlacement = camera.GetCurrentPlacement();
-        bool locationChanged = currentPlacement == null || 
-                              Math.Abs(currentPlacement.Latitude - cmd.Latitude) > 0.0001 ||
-                              Math.Abs(currentPlacement.Longitude - cmd.Longitude) > 0.0001 ||
-                              Math.Abs(currentPlacement.DirectionDegrees - cmd.DirectionDegrees) > 0.1 ||
+        bool locationChanged = currentPlacement == null ||
+                              !CameraPlacementHelper.IsSamePlacement(
+                                  currentPlacement.Latitude, currentPlacement.Longitude, currentPlacement.DirectionDegrees,
+                                  cmd.Latitude, cmd.Longitude, cmd.DirectionDegrees) ||
                               !string.Equals(currentPlacement.LocationName, cmd.LocationName, StringComparison.OrdinalIgnoreCase);
 
         if (locationChanged)
