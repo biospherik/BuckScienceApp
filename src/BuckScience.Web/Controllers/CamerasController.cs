@@ -129,12 +129,14 @@ public class CamerasController : Controller
         return placementHistory.Select(p => new
         {
             id = p.Id,
+            locationName = p.LocationName,
             latitude = p.Latitude,
             longitude = p.Longitude,
             directionDegrees = p.DirectionDegrees,
             startDateTime = p.StartDateTime,
             endDateTime = p.EndDateTime,
             isCurrentPlacement = p.IsCurrentPlacement,
+            isAtCurrentLocation = p.IsAtCurrentLocation,
             duration = p.Duration
         }).ToList<object>();
     }
@@ -552,6 +554,7 @@ public class CamerasController : Controller
                 StartDateTime = ph.StartDateTime,
                 EndDateTime = ph.EndDateTime,
                 IsCurrentPlacement = ph.IsCurrentPlacement,
+                IsAtCurrentLocation = ph.IsAtCurrentLocation,
                 Duration = ph.Duration
             }).ToList()
         };

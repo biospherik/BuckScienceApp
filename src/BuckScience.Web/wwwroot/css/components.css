@@ -599,6 +599,108 @@
     border-color: var(--bs-moss);
 }
 
+/* Direction indicator that orbits the camera pin. Must stay absolutely positioned (the
+   inline left/top from properties.js is meaningless otherwise) and must not take pointer
+   events, or it covers the pin and swallows its click and hover. */
+.camera-direction-indicator {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.camera-direction-indicator svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 1px 2px rgba(13, 20, 9, 0.3));
+}
+
+.camera-direction-indicator text {
+    font-family: var(--bs-font-family-primary);
+    font-size: 9px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+    fill: var(--bs-dark);
+}
+
+/* ========== Camera Placement History Markers ========== */
+/* Previous locations a camera has occupied. Always rendered beneath the live camera pin so a
+   nearby historical marker can never hide it or steal its click and hover. */
+.camera-placement-marker {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+/* The camera's present location always wins the stacking and hit test. */
+.camera-marker,
+.camera-placement-marker.current {
+    z-index: 2;
+}
+
+.camera-placement-marker-inner {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--bs-white);
+    box-shadow: var(--bs-shadow-lg);
+    font-size: 14px;
+    color: var(--bs-white);
+    transition: transform var(--bs-transition-base);
+}
+
+.camera-placement-marker-inner:hover {
+    transform: scale(1.1);
+}
+
+.camera-placement-marker-inner.current-active {
+    background-color: var(--bs-amber);
+    border-color: var(--bs-gold);
+}
+
+.camera-placement-marker-inner.current-inactive {
+    background-color: var(--bs-bark);
+    border-color: var(--bs-moss);
+}
+
+.camera-placement-marker-inner.historical {
+    /* Faded bark so a past location reads as history, never as a live camera */
+    background-color: rgba(46, 58, 40, 0.65);
+    border-color: var(--bs-tan);
+}
+
+.camera-placement-direction-indicator {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.camera-placement-direction-indicator svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 1px 2px rgba(13, 20, 9, 0.3));
+}
+
+.camera-placement-direction-indicator text {
+    font-family: var(--bs-font-family-primary);
+    font-size: 8px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+    fill: var(--bs-dark);
+}
+
 /* ========== Gallery and Photo Components ========== */
 .gallery-item {
     transition: transform var(--bs-transition-base), box-shadow var(--bs-transition-base);

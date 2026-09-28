@@ -421,19 +421,24 @@ window.App = window.App || {};
         // Create markers for each placement in history
         placementHistory.forEach((placement, index) => {
             try {
-                // Create marker element with Font Awesome camera icon and direction indicator
-                const markerElement = document.createElement('div');
-                markerElement.className = 'camera-placement-marker';
-                
                 const compassDirection = getCompassDirection(placement.directionDegrees);
                 const directionPos = calculatePlacementDirectionPosition(placement.directionDegrees);
-                
+
                 // Determine marker color based on whether it's current or historical placement
                 const isCurrentPlacement = placement.isCurrentPlacement;
-                const markerClass = isCurrentPlacement ? 
-                    (camera.isActive ? 'current-active' : 'current-inactive') : 
+                const markerClass = isCurrentPlacement ?
+                    (camera.isActive ? 'current-active' : 'current-inactive') :
                     'historical';
-                
+
+                // Create marker element with Font Awesome camera icon and direction indicator.
+                // The current placement carries the 'current' modifier so it always stacks above
+                // historical markers sharing its coordinates instead of being buried by them.
+                const markerElement = document.createElement('div');
+                markerElement.className = isCurrentPlacement
+                    ? 'camera-placement-marker current'
+                    : 'camera-placement-marker';
+                markerElement.title = camera.locationName || camera.name || '';
+
                 markerElement.innerHTML = `
                     <div class="camera-placement-marker-inner ${markerClass}">
                         <i class="fas fa-camera"></i>
@@ -443,7 +448,7 @@ window.App = window.App || {};
                     </div>
                 `;
                 
-                // Camera placement marker styles are now in site.css
+                // Camera placement marker styles live in components.css
 
                 // Create marker
                 const marker = new mapboxgl.Marker({
@@ -500,7 +505,7 @@ window.App = window.App || {};
                 
                 <div class="alert ${placement.isCurrentPlacement ? 'alert-success' : 'alert-secondary'}" role="alert">
                     <i class="fas fa-camera me-2"></i>
-                    <strong>${camera.name}</strong>
+                    <strong>${camera.locationName || camera.name || ''}</strong>
                     <br><small>${placement.isCurrentPlacement ? 'Current Location' : 'Previous Location'}</small>
                 </div>
                 
@@ -1105,11 +1110,14 @@ window.App = window.App || {};
                 
                 if (!Array.isArray(cameras)) {
                     console.error('Cameras response is not an array:', cameras);
+                    // Release the guard, otherwise every later refresh is silently skipped
+                    window.App._displayingCameras = false;
                     return;
                 }
 
                 if (cameras.length === 0) {
                     console.log('No cameras to display');
+                    window.App._displayingCameras = false;
                     return;
                 }
 
@@ -1122,10 +1130,12 @@ window.App = window.App || {};
                         // Create marker element with Font Awesome camera icon and direction indicator
                         const markerElement = document.createElement('div');
                         markerElement.className = 'camera-marker';
-                        
+                        // Native tooltip showing the camera name on hover
+                        markerElement.title = camera.locationName || '';
+
                         const compassDirection = getCompassDirection(camera.directionDegrees);
                         const directionPos = calculateDirectionPosition(camera.directionDegrees);
-                        
+
                         markerElement.innerHTML = `
                             <div class="camera-marker-inner ${camera.isActive ? 'active' : 'inactive'}">
                                 <i class="fas fa-camera"></i>
@@ -1135,7 +1145,7 @@ window.App = window.App || {};
                             </div>
                         `;
                         
-                        // Camera marker styles are now in site.css - no need for inline styles
+                        // Camera marker styles live in components.css - no need for inline styles
 
                         // Create marker
                         const marker = new mapboxgl.Marker({
@@ -1219,15 +1229,20 @@ window.App = window.App || {};
 
         placementHistory.forEach((placement, index) => {
             try {
-                // Skip current placement as it's already shown as the main camera marker
-                if (placement.isCurrentPlacement) {
+                // Skip the current placement (already shown as the main camera marker) and any
+                // ended placement that sits at the same spot the camera occupies today. Editing a
+                // camera's direction or location name ends the old placement and starts a new one
+                // at identical coordinates, so drawing the ended record would stack a grey
+                // historical marker directly on top of the live camera pin - hiding its colour and
+                // stealing its click and hover.
+                if (placement.isCurrentPlacement || placement.isAtCurrentLocation) {
                     return;
                 }
 
                 // Create marker element for historical placement
                 const markerElement = document.createElement('div');
                 markerElement.className = 'camera-placement-marker';
-                
+
                 const compassDirection = getCompassDirection(placement.directionDegrees);
                 const directionPos = calculatePlacementDirectionPosition(placement.directionDegrees);
                 
@@ -1240,7 +1255,7 @@ window.App = window.App || {};
                     </div>
                 `;
                 
-                // Camera placement marker styles are now in site.css
+                // Camera placement marker styles live in components.css
 
                 // Create marker
                 const marker = new mapboxgl.Marker({
